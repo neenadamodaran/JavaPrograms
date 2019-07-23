@@ -21,7 +21,10 @@ import javax.imageio.ImageIO;
  *
  *	What we are trying to do in this class is to blurr the clarity of an image. 
  *	Original source image is represented by array of integers where each integer represent the color value of  a single pixel
- *  
+ *  ForkBlur implements a simple horizontal image blur. It averages pixels in the
+ * 	source array and writes them to a destination array. The sThreshold value
+ * 	determines whether the blurring will be performed directly or split into two
+ * 	stasks.
  */
 public class ForkBlur extends RecursiveAction{
 	
