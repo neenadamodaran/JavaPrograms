@@ -1,10 +1,14 @@
 package javaprograms.mutithreading;
 
-import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.TimeUnit;
+
+import javaprograms.util.Utility;
 
 /**
+ * This class is designed to show how to use Fork/Join framework to perform
+ *  MergeSort of an array with high number of elements.
  * 
  * @author neenadamodaran
  *
@@ -12,60 +16,42 @@ import java.util.concurrent.RecursiveAction;
 public class MergeSortUsingForkJoin {
 	private static final int ARRAY_SIZE = 10000000;
 
-	public static void main(String[] args) {
-		ForkJoinPool pool = new ForkJoinPool();
+	public static void main(String[] args) throws InterruptedException {
+
+		// ForkJoinPool is an executor Service for running ForkJoinTasks.
+		ForkJoinPool pool = ForkJoinPool.commonPool();
+
 		long startTime;
 		long endTime;
-		int[] array = createArray(ARRAY_SIZE);
-		//printArray(array);
+
+		int[] array = Utility.createArray(ARRAY_SIZE);
+
 		MergeSort mergeSort = new MergeSort(array, 0, array.length - 1);
-		startTime = System.currentTimeMillis();
+		startTime = System.nanoTime();
+
 		// Start execution and wait for result/return
 		pool.invoke(mergeSort);
-		endTime = System.currentTimeMillis();
-		System.out.println("Time taken: using Fork Join " + (endTime - startTime) + " millis");
-		printArray(array); 
-	}
 
-	private static int[] createArray(int arraySize) {
-		if (arraySize < 0)
-			return new int[0];
+		endTime = System.nanoTime();
+		System.out.println("Time taken in seconds: using Fork Join " + (endTime - startTime) / 1E9);
 
-		int[] array = new int[arraySize];
-		for (int i = 0; i < arraySize; i++) {
-			array[i] = getRandomNumberInRange(0, arraySize);
-		}
-		return array;
-	}
-	
-	private static void printArray(int []array) {
-		if (array == null)
-			System.out.println("Invalid Array");
-		
-		//System.out.println(" Array length " + array.length);
-		for (int i = 0; i < array.length; i++) {
-			System.out.println(array[i]);
-		}
-		
-	}
-
-
-	private static int getRandomNumberInRange(int min, int max) {
-
-		if (min >= max) {
-			throw new IllegalArgumentException("max must be greater than min");
-		}
-
-		Random r = new Random();
-		return r.nextInt((max - min) + 1) + min;
+		// Utility.printArray(array);
 	}
 
 }
 
 /**
- * Merge sort is a divide and conquer algorithm.
- * Here we recursively spilt the array till the array size is 2 and then we start merging. 
- * And during merging we sort the element. 
+ * This class is designed to show how to use Fork/Join framework to perform
+ *  MergeSort of an array with high number of elements.
+ * 
+ * Merge sort is a divide and conquer algorithm. Here we recursively split the
+ * array till the array size is 2 and then we start merging. And during merging
+ * we sort the element.
+ * 
+ *MergeSort extends Recursive action because the compute function doesnot
+ * return anything. Incase the compute function is required to returns a value
+ * then we extend RecursiveTask.
+ * 
  * @author neenadamodaran
  *
  */
@@ -83,11 +69,17 @@ class MergeSort extends RecursiveAction {
 
 	@Override
 	protected void compute() {
-		
-		
+		/*
+		 * Here we could perform an optimization ie. if the length(ie. high
+		 * - low) of the array that is to be sorted is within a given threshold
+		 * then sort the elements of the array using a insertion sort (or use
+		 * Arrays.sort) or else use the MergeSort.
+		 * 
+		 * .
+		 */
 		if (left < right) {
 			int mid = (left + right) / 2;
-			//System.out.println("mid value " + mid); 
+			// System.out.println("mid value " + mid);
 			RecursiveAction leftSort = new MergeSort(array, left, mid);
 			RecursiveAction rightSort = new MergeSort(array, mid + 1, right);
 			invokeAll(leftSort, rightSort);
@@ -98,7 +90,8 @@ class MergeSort extends RecursiveAction {
 	}
 
 	private void merge(int left, int mid, int right) {
-		//System.out.println( "left " + left +" mid value " + mid + " right " + right); 
+		// System.out.println( "left " + left +" mid value " + mid + " right " +
+		// right);
 		// TODO Auto-generated method stub
 
 		int leftArrayELementCount = mid - left + 1;
