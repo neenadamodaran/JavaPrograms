@@ -1,5 +1,6 @@
 package javaprograms.mutithreading;
 
+import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,7 @@ import javaprograms.util.Utility;
  *
  */
 public class MergeSortUsingForkJoin {
-	private static final int ARRAY_SIZE = 10000000;
+	private static final int ARRAY_SIZE = 10000;
 
 	public static void main(String[] args) throws InterruptedException {
 
@@ -35,7 +36,9 @@ public class MergeSortUsingForkJoin {
 		endTime = System.nanoTime();
 		System.out.println("Time taken in seconds: using Fork Join " + (endTime - startTime) / 1E9);
 
-		// Utility.printArray(array);
+		//
+		
+		Utility.printArray(array);
 	}
 
 }
@@ -45,10 +48,10 @@ public class MergeSortUsingForkJoin {
  *  MergeSort of an array with high number of elements.
  * 
  * Merge sort is a divide and conquer algorithm. Here we recursively split the
- * array till the array size is 2 and then we start merging. And during merging
- * we sort the element.
+ * array till the array size is less than or equal to a Threshold and then we sort the array and 
+ * perform the merging. And during merging as well we sort the elements of both the sorted arrays.
  * 
- *MergeSort extends Recursive action because the compute function doesnot
+ * MergeSort extends Recursive action because the compute function doesnot
  * return anything. Incase the compute function is required to returns a value
  * then we extend RecursiveTask.
  * 
@@ -59,7 +62,8 @@ class MergeSort extends RecursiveAction {
 	private int[] array;
 	private int left;
 	private int right;
-
+	private static final int THRESHOlD = 10; 
+	
 	public MergeSort(int[] array, int left, int right) {
 		super();
 		this.array = array;
@@ -70,14 +74,17 @@ class MergeSort extends RecursiveAction {
 	@Override
 	protected void compute() {
 		/*
-		 * Here we could perform an optimization ie. if the length(ie. high
+		 * Here we have performed an optimization ie. if the length(ie. high
 		 * - low) of the array that is to be sorted is within a given threshold
-		 * then sort the elements of the array using a insertion sort (or use
-		 * Arrays.sort) or else use the MergeSort.
+		 * then sort the elements of the array using a sequential sort
+		 *  or else use the Fork/Join MergeSort.
 		 * 
 		 * .
 		 */
-		if (left < right) {
+		if(right -left <= THRESHOlD){
+			Arrays.sort(array, left, right + 1);
+		}
+		else {
 			int mid = (left + right) / 2;
 			// System.out.println("mid value " + mid);
 			RecursiveAction leftSort = new MergeSort(array, left, mid);
@@ -89,10 +96,14 @@ class MergeSort extends RecursiveAction {
 
 	}
 
+	/**
+	 * Sorts and Merges the two splitted arrays.
+	 * @param left
+	 * @param mid
+	 * @param right
+	 */
 	private void merge(int left, int mid, int right) {
-		// System.out.println( "left " + left +" mid value " + mid + " right " +
-		// right);
-		// TODO Auto-generated method stub
+		
 
 		int leftArrayELementCount = mid - left + 1;
 		int rightArrayElementCount = right - mid;
