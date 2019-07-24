@@ -58,5 +58,9 @@ public class Utility {
 		// to get random number starting with min and ending with max.
 		return r.nextInt((max - min) + 1) + min;
 	}
+	
+	public static double getTimeInSeconds(long startTimeAsNanoTime, long endTimeAsNanoTime) {
+		return (endTimeAsNanoTime - startTimeAsNanoTime)/1E9;
+	}
 
 }
