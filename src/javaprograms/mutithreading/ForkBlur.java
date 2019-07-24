@@ -128,7 +128,15 @@ public class ForkBlur extends RecursiveAction{
         System.out.println("Output image: " + dstName);
         
     }
-
+    
+    /**
+     * 
+     * Method that converts an image into its corresponding pixel value array 
+     * and then uses Fork/Join to blur it and copy the blurred pixel values to
+     * a destination array and uses it to create a new blurred image.  
+     * @param origImage
+     * @return
+     */
 	private static BufferedImage blur(BufferedImage origImage) {
 		int width =  origImage.getWidth(); 
 		int height = origImage.getHeight(); 
